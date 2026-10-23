@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Pizzary Menüboard</title>
+<!-- Menüboards The Pizzary. Aufruf: tv.html?b=1 (Signature), 2 (Baukasten), 3 (Salate und Getränke), 4 (Menü Deal Allet drin), 5 (Allergene).
+     Hochkant: &hoch=1. Export (Standbild, Video): &export=1.
+     Alle Bewegung hängt an window.renderAt(t), Schleife LOOP Sekunden, jede Bewegung ist periodisch (erstes und letztes Bild passen nahtlos).
+     Preise, Namen, Zutaten, Tags, Pfand kommen aus data.js (build_data.py, Quelle 04_Produkt_Rezepte/Produktdaten.json). -->
+<script src="data.js"></script>
+<style>
+@font-face{font-family:'Bright Dreams';src:url('assets/fonts/BrightDreams-Regular.ttf')}
+@font-face{font-family:'Bisko';src:url('assets/fonts/Bisko.otf')}
+:root{--base:#F4F4ED;--cheesy:#F5F5AF;--gold:#FFC31E;--tomato:#BE2337;--veggie:#AFCDAF;--sky:#7D82D9;--pink:#DE7DCE;--k:#000;
+ --cp:polygon(0 14px,14px 0,calc(100% - 26px) 0,100% 18px,100% calc(100% - 12px),calc(100% - 18px) 100%,22px 100%,0 calc(100% - 24px))}
+*{box-sizing:border-box}
+html,body{margin:0;background:#000;overflow:hidden}
+@page{margin:0}
+#tv{position:relative;overflow:hidden;transform-origin:0 0;background:var(--base);color:var(--k);font-family:'Ariana Pro','Avenir Next','Arial',sans-serif;font-weight:500}
+#tv.q{width:1920px;height:1080px}#tv.h{width:1080px;height:1920px}
+.abs{position:absolute}
+.hv{font-weight:800;text-transform:uppercase;letter-spacing:.01em}
+.bd{font-family:'Bright Dreams','Avenir Next',sans-serif;font-weight:400;text-transform:uppercase;letter-spacing:.02em}
+.bi{font-family:'Bisko','Avenir Next',sans-serif;font-weight:400}
+.sp{font-weight:700;text-transform:uppercase;letter-spacing:.2em}
+.cw{position:absolute}
+.cw::before{content:"";position:absolute;inset:0;transform:translate(8px,8px);background:#000;clip-path:var(--cp)}
+.cw>.cd{position:absolute;inset:0;clip-path:var(--cp);overflow:hidden}
+.zk{clip-path:polygon(2% 12%,18% 0,34% 8%,52% 0,70% 9%,88% 0,100% 14%,96% 52%,100% 88%,82% 100%,64% 92%,46% 100%,28% 93%,10% 100%,0 80%,4% 46%)}
+.zk2{clip-path:polygon(0 8%,12% 0,40% 6%,70% 0,100% 10%,97% 50%,100% 92%,72% 100%,40% 94%,10% 100%,3% 55%)}
+.tg{display:inline-block;font-weight:800;text-transform:uppercase;letter-spacing:.08em;border:3px solid #000;border-radius:99px;padding:3px 14px;font-size:18px;line-height:1.2;white-space:nowrap}
+.t-vegan{background:var(--veggie)}.t-scharf{background:var(--tomato);color:#fff}.t-beliebt{background:#000;color:var(--cheesy)}.t-käsig{background:var(--gold)}
+.pr{display:inline-block;background:var(--tomato);color:#fff;font-weight:800;white-space:nowrap;padding:2px 16px 4px;clip-path:polygon(0 10%,8% 0,92% 3%,100% 14%,98% 88%,90% 100%,6% 97%,1% 82%)}
+.ft{position:absolute;left:0;right:0;bottom:0;background:#000;color:#fff;overflow:hidden;white-space:nowrap}
+.ft .mq{display:inline-block;will-change:transform}
+.ft .u{display:inline-block}
+.lg{position:absolute;color:#000;opacity:.78;font-weight:500}
+.bowl{display:flex;flex-direction:column;align-items:center;text-align:center}
+.bowl img{display:block;object-fit:contain}
+.row{display:flex;align-items:center;border-bottom:3px solid #000}
+.dash{border:5px dashed var(--cheesy);border-radius:28px}
+</style>
+</head>
+<body>
+<div id="tv"><div id="cont"></div></div>
+<script>
+var Q = new URLSearchParams(location.search), BD = +(Q.get("b") || 1), HO = Q.get("hoch") === "1", EXP = Q.get("export") === "1", LOOP = 12;
+var W = HO ? 1080 : 1920, H = HO ? 1920 : 1080;
+var tv = document.getElementById("tv"), cont = document.getElementById("cont");
+tv.className = HO ? "h" : "q";
+var A = function (f) { return "assets/" + f; };
+var CP = ["var(--cheesy)", "var(--pink)", "var(--sky)", "var(--veggie)"];
+var FLN = 0;
+function F(k, a, r) { var p = (FLN++ * 1.7) % 6.283; return 'data-fl="' + [k || 1, a == null ? 8 : a, r == null ? 1.6 : r, p.toFixed(3)].join(",") + '"'; }
+var PUN = 0;
+function PU() { return 'data-pu="' + (PUN++) + '"'; }
+function tags(arr, fs) { return arr.map(function (t) { return '<span class="tg t-' + t + '" style="' + (fs ? 'font-size:' + fs + 'px' : '') + '">' + t + '</span>'; }).join(" "); }
+function img(f, st) { return '<img src="' + A(f) + '" style="' + (st || "") + '">'; }
+function card(x, y, w, h, bg, inner, extra) { return '<div class="cw" style="left:' + x + 'px;top:' + y + 'px;width:' + w + 'px;height:' + h + 'px;' + (extra || "") + '"><div class="cd" style="background:' + bg + '">' + inner + '</div></div>'; }
+function ps(v) { return v.replace(" €", "&nbsp;€"); }
+
+/* ---------- Rahmen: Kopf, Fuß ---------- */
+var CT = HO ? 262 : 172, CB = HO ? 1748 : 950;
+function header(kick, big, stoer, opt) {
+  opt = opt || {};
+  var logo = opt.dark ? "logo_weiss.png" : "logo_schwarz.png";
+  var h = "";
+  if (!HO) {
+    h += '<img class="abs" src="' + A(logo) + '" style="left:52px;top:34px;width:262px">';
+    h += '<div class="abs" style="left:372px;top:26px"><div class="sp" style="font-size:22px;opacity:.85">' + kick + '</div><div class="hv" style="font-size:' + (opt.fs || 80) + 'px;line-height:1.02;margin-top:4px">' + big + '</div></div>';
+    if (stoer) h += '<div class="abs zk bd" ' + F(1, 5, 2) + ' data-tf="rotate(2.5deg)" style="right:50px;top:30px;background:' + (opt.stbg || 'var(--cheesy)') + ';color:#000;font-size:40px;line-height:1.1;padding:26px 54px;text-align:center">' + stoer + '</div>';
+  } else {
+    h += '<img class="abs" src="' + A(logo) + '" style="left:50px;top:40px;width:290px">';
+    h += '<div class="abs" style="left:50px;top:152px;right:50px"><div class="sp" style="font-size:22px;opacity:.85">' + kick + '</div><div class="hv" style="font-size:' + (opt.fsh || 72) + 'px;line-height:1.02;margin-top:2px">' + big + '</div></div>';
+    if (stoer) h += '<div class="abs zk bd" ' + F(1, 5, 2) + ' data-tf="rotate(3deg)" style="right:44px;top:34px;background:' + (opt.stbg || 'var(--cheesy)') + ';color:#000;font-size:32px;line-height:1.1;padding:22px 44px;text-align:center">' + stoer + '</div>';
+  }
+  return h;
+}
+function footer(dark) {
+  var u = DATA.claims.slice(0, 2).map(function (c) { return '<span class="bd" style="padding:0 34px">' + c + '</span><span style="color:var(--gold);font-size:' + (HO ? 30 : 28) + 'px">●</span>'; }).join("");
+  var fh = HO ? 64 : 56;
+  var leg = '<div class="lg" style="left:50px;right:50px;bottom:' + (fh + 12) + 'px;font-size:' + (HO ? 21 : 20) + 'px;display:flex;' + (HO ? 'flex-direction:column;gap:2px' : 'justify-content:space-between;gap:20px') + (dark ? ';color:#fff;opacity:.85' : '') + '"><span>Alle Preise in Euro inkl. MwSt. · Allergene auf Nachfrage, Übersicht am Tresen</span><span>The Pizzary · Zimmerstraße, Berlin Mitte · @the_pizzary</span></div>';
+  return leg + '<div class="ft" style="height:' + fh + 'px;line-height:' + fh + 'px;font-size:' + (HO ? 32 : 30) + 'px"><div class="mq" id="mq"><span class="u" id="mu">' + u + '</span>' + '<span class="u">' + u + '</span>'.repeat(5) + '</div></div>';
+}
+
+/* ---------- Board 1: Signature Pizzen ---------- */
+var KOPF = { yuki: "kopf_yuki.webp", malik: "kopf_malik.webp", guenni: "kopf_guenni.webp", moni: "kopf_moni.webp", sam: "kopf_sam.webp", renate: "kopf_reni.webp" };
+function kopf(p, x, y, s, k) {
+  if (KOPF[p.id]) return '<img class="abs fl" ' + F(2, 3, 4) + ' data-tf="" src="' + A(KOPF[p.id]) + '" style="left:' + x + 'px;top:' + y + 'px;width:' + s + 'px;z-index:3">';
+  /* Charakterkopf fehlt (Lennart, Steve): grafischer Ersatz, Markierung siehe README */
+  return '<div class="abs fl bd" ' + F(2, 3, 4) + ' data-tf="" style="left:' + x + 'px;top:' + y + 'px;width:' + (s * .8) + 'px;height:' + (s * .8) + 'px;border-radius:50%;background:#000;color:var(--cheesy);font-size:' + (s * .5) + 'px;line-height:' + (s * .8) + 'px;text-align:center;z-index:3">' + p.name[0] + '</div>';
+}
+function board1() {
+  var h = header("Signature Pizzen", "Unsere Acht", "In 180 Sekunden<br>fertig");
+  var P = DATA.signature, out = "";
+  if (!HO) {
+    var cw = 440, ch = 380, gx = 20, gy = 22, x0 = 50, y0 = CT - 6;
+    P.forEach(function (p, i) {
+      var c = i % 4, r = Math.floor(i / 4), x = x0 + c * (cw + gx), y = y0 + r * (ch + gy);
+      var bg = CP[(i + r * 2) % 4];
+      var inner =
+        '<img class="abs fl" ' + F(1, 7, 2.2) + ' data-tf="" src="' + A("pizza_" + p.id + ".webp") + '" style="left:120px;top:10px;width:222px;height:222px;object-fit:contain">' +
+        '<div class="abs" style="left:18px;top:18px;display:flex;flex-direction:column;gap:8px;align-items:flex-start">' + tags(p.tags) + '</div>' +
+        kopf(p, 14, 84, 112) +
+        '<div class="abs hv" style="left:20px;top:242px;font-size:42px;line-height:1">' + p.name + '</div>' +
+        '<div class="abs pr pu" ' + PU() + ' style="right:16px;top:236px;font-size:34px;transform:rotate(-2deg)">' + ps(p.preis) + '</div>' +
+        '<div class="abs" style="left:20px;right:20px;top:290px;font-size:20px;line-height:1.25;font-weight:600">' + p.text + '</div>';
+      out += card(x, y, cw, ch, bg, inner);
+    });
+  } else {
+    var rh = 178, gap = 14, rw = 980;
+    var avail = CB - CT; rh = Math.floor((avail - gap * 7) / 8);
+    P.forEach(function (p, i) {
+      var y = CT + i * (rh + gap), bg = CP[i % 4];
+      var inner =
+        '<img class="abs fl" ' + F(1, 5, 2.2) + ' data-tf="" src="' + A("pizza_" + p.id + ".webp") + '" style="left:26px;top:' + ((rh - 156) / 2) + 'px;width:156px;height:156px;object-fit:contain">' +
+        kopf(p, 134, rh - 96, 92) +
+        '<div class="abs" style="left:238px;top:12px;display:flex;align-items:center;gap:16px"><div class="hv" style="font-size:52px;line-height:1">' + p.name + '</div>' + tags(p.tags, 17) + '</div>' +
+        '<div class="abs" style="left:238px;top:74px;width:430px;font-size:23px;line-height:1.22;font-weight:600">' + p.text + '</div>' +
+        '<div class="abs pr pu" ' + PU() + ' style="right:26px;top:' + ((rh - 82) / 2) + 'px;font-size:60px;line-height:78px;transform:rotate(-2deg)">' + ps(p.preis) + '</div>';
+      out += card(50, y, rw, rh, bg, inner);
+    });
+  }
+  var note = '<div class="lg" style="left:50px;' + (HO ? 'bottom:134px;font-size:19px' : 'bottom:100px;font-size:18px') + ';opacity:.7">Alle Pizzen mit Tomatensoße, Yuki mit BBQ-Soße. Vegan laut Rezeptur, Zubereitung in gemeinsamer Küche.</div>';
+  return h + out + note + footer();
+}
+
+/* ---------- Board 2: Baukasten ---------- */
+function bowl(id, name, size, fs, ph) { return '<div class="bowl"><img class="fl" ' + F(1, 5, 3) + ' data-tf="" src="' + A("zutat_" + id + ".webp") + '" style="width:' + size + 'px;height:' + size + 'px"><div style="font-size:' + fs + 'px;font-weight:700;line-height:1.15;margin-top:4px">' + name + '</div></div>'; }
+function stepCard(x, y, w, h, bg, nr, title, sub, items, cols, size, fs, dark) {
+  var col = dark ? "color:#fff" : "";
+  var inner = '<div class="abs" style="left:20px;top:16px;right:16px;display:flex;align-items:center;gap:14px;' + col + '">' +
+    '<div class="bd" style="width:54px;height:54px;border-radius:50%;background:' + (dark ? 'var(--cheesy)' : '#000') + ';color:' + (dark ? '#000' : 'var(--cheesy)') + ';font-size:34px;line-height:56px;text-align:center;flex:none">' + nr + '</div>' +
+    '<div><div class="hv" style="font-size:' + (HO ? 38 : 34) + 'px;line-height:1">' + title + '</div><div style="font-size:' + (HO ? 22 : 20) + 'px;font-weight:600;margin-top:3px;opacity:.85">' + sub + '</div></div></div>' +
+    '<div class="abs" style="left:12px;right:12px;top:98px;bottom:10px;display:grid;grid-template-columns:repeat(' + cols + ',1fr);align-content:space-around;justify-items:center;gap:6px 4px;' + col + '">' +
+    items.map(function (i) { return bowl(i[0], i[1], size, fs); }).join("") + '</div>';
+  return card(x, y, w, h, bg, inner);
+}
+function rez(t) { var p = t.split(', '); return p.slice(0, 2).join(' · ') + '<br>' + p.slice(2).join(' · '); }
+function board2() {
+  var h = header("Baukasten", "Deine Pizza. Deine Regeln.", "Bis zu 25<br>frische Zutaten", { fs: 62, fsh: 62 });
+  var out = "", S = DATA.schritte;
+  var sub = ["1x bis 2x", "1x bis 2x", "1, 3, 5 oder 7", "1x bis 2x"];
+  if (!HO) {
+    var tw = 440, th = 250, gx = 20, x0 = 50, y0 = CT + 2;
+    DATA.baukasten.forEach(function (s, i) {
+      var inner = '<div class="abs bd" style="left:22px;top:2px;font-size:178px;line-height:1">' + s.n + '</div>' +
+        '<div class="abs hv" style="left:128px;top:24px;font-size:30px;line-height:1">Topping' + (s.n > 1 ? 's' : '') + '</div>' +
+        '<div class="abs pr pu" ' + PU() + ' style="left:128px;top:66px;font-size:62px;line-height:80px;transform:rotate(-2deg)">' + ps(s.preis) + '</div>' +
+        '<div class="abs" style="left:24px;right:20px;top:170px;font-size:22px;line-height:1.3;font-weight:700">' + rez(s.text) + '</div>';
+      out += card(x0 + i * (tw + gx), y0, tw, th, CP[i], inner);
+    });
+    var y1 = y0 + th + 30, h1 = CB - y1, cw = 348, g = 20;
+    out += stepCard(50, y1, cw, h1, "var(--sky)", 1, "Soße", sub[0], S.soesse, 2, 150, 22);
+    out += stepCard(50 + (cw + g), y1, cw, h1, "var(--cheesy)", 2, "Käse", sub[1], S.kaese, 2, 150, 22);
+    out += stepCard(50 + 2 * (cw + g), y1, cw, h1, "var(--veggie)", 3, "Toppings", sub[2], S.toppings, 2, 92, 19);
+    out += stepCard(50 + 3 * (cw + g), y1, cw, h1, "var(--pink)", 4, "Gewürz", sub[3], S.gewuerze, 2, 150, 22);
+    var ex = '<div class="abs" style="left:20px;top:16px;color:#fff"><div class="hv" style="font-size:34px;line-height:1">Extra Soßen</div><div style="font-size:20px;font-weight:600;margin-top:3px;opacity:.85">Zum Dippen, zum Nachlegen</div></div>' +
+      '<div class="abs pr pu" ' + PU() + ' style="left:20px;top:92px;font-size:54px;line-height:68px;background:var(--cheesy);color:#000;transform:rotate(-2deg)">' + ps(DATA.extra_sossen) + '</div>' +
+      '<div class="abs" style="left:20px;right:12px;top:186px;bottom:10px;display:flex;flex-direction:column;justify-content:space-around;color:#fff">' + S.extras.map(function (i) { return '<div style="display:flex;align-items:center;gap:16px"><img class="fl" ' + F(1, 5, 3) + ' data-tf="" src="' + A("zutat_" + i[0] + ".webp") + '" style="width:104px;height:104px"><div style="font-size:24px;font-weight:700;line-height:1.1">' + i[1] + '</div></div>'; }).join("") + '</div>';
+    out += card(50 + 4 * (cw + g), y1, cw, h1, "#000", ex);
+  } else {
+    var tw2 = 478, th2 = 262, g2 = 24;
+    DATA.baukasten.forEach(function (s, i) {
+      var c = i % 2, r = Math.floor(i / 2);
+      var inner = '<div class="abs bd" style="left:20px;top:0;font-size:178px;line-height:1.05">' + s.n + '</div>' +
+        '<div class="abs hv" style="left:128px;top:28px;font-size:30px;line-height:1">Topping' + (s.n > 1 ? 's' : '') + '</div>' +
+        '<div class="abs pr pu" ' + PU() + ' style="left:128px;top:70px;font-size:60px;line-height:76px;transform:rotate(-2deg)">' + ps(s.preis) + '</div>' +
+        '<div class="abs" style="left:24px;right:18px;top:182px;font-size:22px;line-height:1.28;font-weight:700">' + rez(s.text) + '</div>';
+      out += card(50 + c * (tw2 + g2), CT + r * (th2 + g2), tw2, th2, CP[i], inner);
+    });
+    var yA = CT + 2 * th2 + g2 + 30, hA = 372, wA = 478;
+    out += stepCard(50, yA, wA, hA, "var(--sky)", 1, "Soße", sub[0], S.soesse, 2, 104, 21);
+    out += stepCard(50 + wA + g2, yA, wA, hA, "var(--cheesy)", 2, "Käse", sub[1], S.kaese, 2, 104, 21);
+    var yB = yA + hA + 22;
+    out += stepCard(50, yB, wA, hA, "var(--veggie)", 3, "Toppings", sub[2], S.toppings, 3, 96, 19);
+    out += stepCard(50 + wA + g2, yB, wA, hA, "var(--pink)", 4, "Gewürz", sub[3], S.gewuerze, 3, 132, 21);
+    var yC = yB + hA + 22, hC = CB - yC;
+    var ex = '<div class="abs" style="left:24px;top:16px;color:#fff"><div class="hv" style="font-size:36px;line-height:1">Extra Soßen</div><div style="font-size:21px;font-weight:600;margin-top:3px;opacity:.85">Zum Dippen, zum Nachlegen</div></div>' +
+      '<div class="abs pr pu" ' + PU() + ' style="right:22px;top:' + (hC / 2 - 42) + 'px;font-size:60px;line-height:76px;background:var(--cheesy);color:#000;transform:rotate(-2deg)">' + ps(DATA.extra_sossen) + '</div>' +
+      '<div class="abs" style="left:300px;width:400px;top:' + (hC / 2 - 62) + 'px;display:flex;gap:18px;color:#fff;justify-content:center">' + S.extras.map(function (i) { return bowl(i[0], i[1], 88, 16); }).join("") + '</div>';
+    out += card(50, yC, 980, hC, "#000", ex);
+  }
+  var note = '<div class="lg" style="left:50px;' + (HO ? 'bottom:134px;font-size:19px' : 'bottom:100px;font-size:18px') + ';opacity:.7">Auswahl als Beispiele, alle Zutaten zeigt dir das Team am Tresen.</div>';
+  return h + out + note + footer();
+}
+
+/* ---------- Board 3: Salate und Getränke ---------- */
+var DR = { "spreequell-naturell": "spreequell-naturell", "spreequell-classic": "spreequell-classic", "fritz-kola": "fritz-kola", "fritz-kola-mischmasch": "fritz-kola-mischmasch", "fritz-limo-zitrone": "fritz-limo-zitrone", "fritz-spritz-apfelschorle": "fritz-spritz-apfelschorle", "elephant-bay-pfirsich": "elephant-bay-pfirsich", "elephant-bay-zitrone": "elephant-bay-zitrone" };
+function salatCards(x0, y0, cw, ch, gap) {
+  var out = "";
+  DATA.salate.forEach(function (s, i) {
+    var kick = "Salat", nm = s.name.replace("Salat ", "");
+    var ph = HO ? 220 : 224;
+    var inner = '<img class="abs fl" ' + F(1, 6, 2) + ' data-tf="" src="' + A("salat_" + s.id + ".webp") + '" style="left:' + ((cw - ph) / 2) + 'px;top:14px;width:' + ph + 'px;height:' + ph + 'px;object-fit:contain">' +
+      '<div class="abs pr pu" ' + PU() + ' style="right:12px;top:' + (ph - 40) + 'px;font-size:' + (HO ? 36 : 36) + 'px;transform:rotate(-3deg)">' + ps(s.preis) + '</div>' +
+      '<div class="abs" style="left:20px;top:' + (ph + 22) + 'px;right:12px"><div class="sp" style="font-size:16px">' + kick + '</div><div class="hv" style="font-size:' + (nm.length > 10 ? (HO ? 25 : 24) : 31) + 'px;line-height:1.05">' + nm + '</div></div>' +
+      '<div class="abs" style="left:20px;right:14px;top:' + (ph + 94) + 'px;font-size:' + (HO ? 19 : 18) + 'px;line-height:1.27;font-weight:600">' + s.text + '</div>';
+    out += card(x0 + i * (cw + gap), y0, cw, ch, [CP[3], CP[1], CP[0]][i], inner);
+  });
+  return out;
+}
+function salatBaukasten(x, y, w, h) {
+  var cw = (w - 4 * 14) / 4;
+  var chips = DATA.salat_baukasten.map(function (s, i) {
+    return '<div class="abs" style="left:' + (i * (cw + 14)) + 'px;top:72px;width:' + cw + 'px"><div class="cw" style="position:relative;height:' + (h - 90) + 'px;width:100%"><div class="cd" style="background:' + CP[i] + '">' +
+      '<div class="abs hv" style="left:0;right:0;top:10px;text-align:center;font-size:' + (HO ? 20 : 19) + 'px">' + s.n + ' Topping' + (s.n > 1 ? 's' : '') + '</div>' +
+      '<div class="abs hv pu" ' + PU() + ' style="left:0;right:0;top:' + ((h - 80) / 2 - 2) + 'px;text-align:center;font-size:' + (HO ? 40 : 36) + 'px;color:var(--tomato)">' + ps(s.preis) + '</div></div></div></div>';
+  }).join("");
+  return '<div class="abs" style="left:' + x + 'px;top:' + y + 'px;width:' + w + 'px;height:' + h + 'px"><div class="hv" style="font-size:' + (HO ? 34 : 32) + 'px;line-height:1">Dein Salat. <span style="color:var(--tomato)">Deine Regeln.</span></div>' +
+    '<div style="font-size:19px;font-weight:600;margin-top:4px">Salat, Käse, Toppings und Gewürz nach Stufe. Alle Salate mit einem Dressing deiner Wahl.</div>' + chips + '</div>';
+}
+function drinksPanel(x, y, w, h) {
+  var inner = '', bw = HO ? 110 : 100;
+  var keys = DATA.getraenke.filter(function (g) { return DR[g.id]; });
+  var bh = HO ? 150 : 150;
+  inner += '<div class="abs" style="left:26px;top:16px;right:26px;display:flex;justify-content:space-between;align-items:baseline"><div class="hv" style="font-size:' + (HO ? 52 : 50) + 'px;line-height:1">Getränke</div><div class="sp" style="font-size:19px">0,33 l, alles Mehrweg</div></div>';
+  inner += '<div class="abs" style="left:20px;right:20px;top:84px;height:' + bh + 'px;display:flex;justify-content:space-around;align-items:flex-end">' +
+    keys.map(function (g) { return '<img class="fl" ' + F(1, 6, 2.5) + ' data-tf="" src="' + A("drink_" + DR[g.id] + ".webp") + '" style="height:' + bh + 'px;width:auto">'; }).join("") + '</div>';
+  var ry = 84 + bh + 16, rows = DATA.getraenke.length, rh = Math.floor((h - ry - 14) / rows);
+  inner += '<div class="abs" style="left:26px;right:26px;top:' + ry + 'px;border-top:3px solid #000">' + DATA.getraenke.map(function (g, i) {
+    return '<div class="row" style="height:' + rh + 'px"><div style="flex:1;font-size:' + (HO ? 28 : 27) + 'px;font-weight:700;white-space:nowrap">' + g.name + '</div>' +
+      '<div class="hv" ' + PU() + ' style="font-size:' + (HO ? 32 : 31) + 'px;width:130px;text-align:right;display:inline-block">' + ps(g.preis) + '</div>' +
+      '<div style="width:' + (HO ? 210 : 196) + 'px;text-align:right"><span style="display:inline-block;background:#000;color:var(--cheesy);border-radius:99px;font-size:' + (HO ? 20 : 19) + 'px;font-weight:700;padding:1px 14px;white-space:nowrap">inkl. Pfand</span></div></div>';
+  }).join("") + '</div>';
+  return card(x, y, w, h, "var(--sky)", inner);
+}
+function board3() {
+  var h = header("Salate und Getränke", "Frisch und kalt", "Mehrweg.<br>Pfand im Preis");
+  var out = "";
+  if (!HO) {
+    var lw = 900, cw = 286, gap = 21, ch = 424;
+    out += '<div class="abs hv" style="left:50px;top:' + (CT - 4) + 'px;font-size:54px;line-height:1">Salate</div><div class="abs bi" style="left:300px;top:' + (CT + 10) + 'px;font-size:32px">Frisch geschnitten, jeden Tag.</div>';
+    out += salatCards(50, CT + 62, cw, ch, gap);
+    out += salatBaukasten(50, CT + 62 + ch + 30, lw, CB - (CT + 62 + ch + 30));
+    out += drinksPanel(990, CT + 2, 880, CB - CT - 10);
+  } else {
+    var cw3 = 304, gap3 = 34, ch3 = 430;
+    out += '<div class="abs hv" style="left:50px;top:' + (CT + 4) + 'px;font-size:50px;line-height:1">Salate</div><div class="abs bi" style="left:290px;top:' + (CT + 14) + 'px;font-size:32px">Frisch geschnitten, jeden Tag.</div>';
+    out += salatCards(50, CT + 64, cw3, ch3, 34 - 12 + 0);
+    var yb = CT + 64 + ch3 + 28;
+    out += salatBaukasten(50, yb, 980, 196);
+    var yd = yb + 196 + 20;
+    out += drinksPanel(50, yd, 980, CB - yd - 8);
+  }
+  return h + out + footer();
+}
+
+/* ---------- Board 4: Menü Deal Allet drin (Inhalt von Steve, 19.10.2026) ---------- */
+function heads4() {
+  var L = HO ? [["kopf_guenni.webp", 40, 1520, 170, -8], ["kopf_malik.webp", 205, 1540, 150, 6], ["kopf_moni.webp", 350, 1510, 170, -4], ["kopf_sam.webp", 520, 1540, 160, 8], ["kopf_yuki.webp", 690, 1520, 150, -6], ["kopf_reni.webp", 850, 1550, 130, 5]] :
+    [["kopf_guenni.webp", 70, 770, 150, -8], ["kopf_malik.webp", 240, 790, 130, 6], ["kopf_moni.webp", 390, 765, 150, -4], ["kopf_sam.webp", 560, 790, 135, 8], ["kopf_yuki.webp", 720, 770, 135, -6]];
+  return L.map(function (a) { return '<img class="abs fl" ' + F(1, 8, 4) + ' data-tf="rotate(' + a[4] + 'deg)" src="' + A(a[0]) + '" style="left:' + a[1] + 'px;top:' + a[2] + 'px;width:' + a[3] + 'px">'; }).join("");
+}
+function board4() {
+  var D = DATA.deal, out = "";
+  var slot = function (x, y, w, h, t, tx) {
+    return '<div class="abs" style="left:' + x + 'px;top:' + y + 'px;width:' + w + 'px;height:' + h + 'px;background:var(--cheesy);color:#000;border-radius:28px;display:flex;flex-direction:column;justify-content:center;padding:0 40px">' +
+      '<div class="bd" style="font-size:56px;line-height:1">' + t + '</div><div style="font-size:' + (HO ? 28 : 26) + 'px;margin-top:8px;font-weight:700;line-height:1.2">' + tx + '</div></div>';
+  };
+  var s1 = ["Deine Pizza", "Deine Regeln. Toppings frei."], s2 = ["Ein Getränk", "0,33 l Mehrweg"], s3 = ["Brot oder Salat", "Knoblauchbrot oder kleiner Salat, dazu Dressing oder Dip"];
+  if (!HO) {
+    out += '<img class="abs" src="' + A("logo_weiss.png") + '" style="left:52px;top:34px;width:262px">';
+    out += '<div class="abs zk bd" ' + F(1, 5, 2) + ' data-tf="rotate(-3deg)" style="right:60px;top:34px;background:var(--pink);font-size:44px;padding:28px 58px;line-height:1.05;text-align:center">Mittags<br><span style="font-size:30px">halbe Pizza und Salat ab ' + DATA.deal.mittag + '</span></div>';
+    out += '<div class="abs bd" style="left:66px;top:168px;font-size:250px;line-height:.82;color:var(--cheesy)">Allet<br>drin</div>';
+    out += '<div class="abs pr pu" ' + PU() + ' style="left:80px;top:606px;font-size:104px;line-height:126px;transform:rotate(-3deg);padding:0 36px">ab ' + ps(D.preis) + '</div>';
+    out += heads4();
+    out += slot(1010, CT + 70, 860, 205, s1[0], s1[1]) + slot(1010, CT + 70 + 235, 860, 205, s2[0], s2[1]) + slot(1010, CT + 70 + 470, 860, 205, s3[0], s3[1]);
+  } else {
+    out += '<img class="abs" src="' + A("logo_weiss.png") + '" style="left:50px;top:40px;width:290px">';
+    out += '<div class="abs zk bd" ' + F(1, 5, 2) + ' data-tf="rotate(-3deg)" style="right:44px;top:34px;background:var(--pink);font-size:38px;padding:24px 44px;line-height:1.05;text-align:center">Mittags<br><span style="font-size:26px">halbe Pizza und Salat ab ' + DATA.deal.mittag + '</span></div>';
+    out += '<div class="abs bd" style="left:50px;top:196px;font-size:272px;line-height:.82;color:var(--cheesy)">Allet<br>drin</div>';
+    out += '<div class="abs pr pu" ' + PU() + ' style="left:60px;top:660px;font-size:112px;line-height:132px;transform:rotate(-3deg);padding:0 40px">ab ' + ps(D.preis) + '</div>';
+    out += heads4();
+    [s1, s2, s3].forEach(function (t, i) { out += slot(50, 830 + i * 222, 980, 196, t[0], t[1]); });
+  }
+  return out + footer(true);
+}
+
+/* ---------- Board 5: Allergene ---------- */
+function board5() {
+  var out = "";
+  if (!HO) {
+    out += '<img class="abs" src="' + A("logo_schwarz.png") + '" style="left:52px;top:34px;width:262px">';
+    out += '<div class="abs bd" style="left:52px;top:196px;font-size:168px;line-height:.9">Allergene?</div>';
+    out += '<div class="abs hv" style="left:58px;top:392px;font-size:104px;line-height:1">Frag uns.</div>';
+    out += '<div class="abs" style="left:1130px;top:150px;width:740px;height:330px;background:var(--base);border:7px solid #000;border-radius:64px;padding:54px 56px"><div class="bi" style="font-size:92px;line-height:1.02">Die Übersicht liegt am Tresen.</div></div>';
+    out += '<div class="abs" style="left:1200px;top:466px;width:56px;height:56px;background:var(--base);border-right:7px solid #000;border-bottom:7px solid #000;transform:rotate(28deg) skew(-12deg)"></div>';
+    out += '<img class="abs fl" ' + F(1, 8, 3) + ' data-tf="" src="' + A("kopf_reni.webp") + '" style="left:1230px;top:500px;width:330px">';
+    var chips = DATA.allergene.map(function (a) { return '<span class="hv" style="display:inline-block;background:var(--base);border:4px solid #000;border-radius:99px;padding:6px 26px;font-size:30px;margin:0 12px 14px 0">' + a + '</span>'; }).join("");
+    out += '<div class="abs" style="left:58px;top:590px;width:1130px"><div class="sp" style="font-size:22px;margin-bottom:16px">Die 14 Allergengruppen laut EU</div>' + chips + '</div>';
+    out += '<div class="abs" style="left:1600px;top:640px;width:270px;font-size:24px;line-height:1.3;font-weight:700">Zubereitung in gemeinsamer Küche. Spuren können nicht ausgeschlossen werden.</div>';
+  } else {
+    out += '<img class="abs" src="' + A("logo_schwarz.png") + '" style="left:50px;top:40px;width:290px">';
+    out += '<div class="abs bd" style="left:50px;top:210px;font-size:160px;line-height:.9">Allergene?</div>';
+    out += '<div class="abs hv" style="left:56px;top:380px;font-size:116px;line-height:1">Frag uns.</div>';
+    out += '<div class="abs" style="left:50px;top:620px;width:980px;height:300px;background:var(--base);border:7px solid #000;border-radius:60px;padding:46px 52px"><div class="bi" style="font-size:96px;line-height:1.02">Die Übersicht liegt am Tresen.</div></div>';
+    out += '<img class="abs fl" ' + F(1, 8, 3) + ' data-tf="" src="' + A("kopf_reni.webp") + '" style="left:700px;top:930px;width:280px">';
+    var chips = DATA.allergene.map(function (a) { return '<span class="hv" style="display:inline-block;background:var(--base);border:4px solid #000;border-radius:99px;padding:6px 24px;font-size:30px;margin:0 10px 14px 0">' + a + '</span>'; }).join("");
+    out += '<div class="abs" style="left:50px;top:960px;width:640px"><div class="sp" style="font-size:20px;margin-bottom:14px">Die 14 Allergengruppen laut EU</div>' + chips + '</div>';
+    out += '<div class="abs" style="left:50px;top:1560px;width:960px;font-size:30px;line-height:1.3;font-weight:700">Zubereitung in gemeinsamer Küche. Spuren können nicht ausgeschlossen werden.</div>';
+  }
+  return out + footer();
+}
+
+/* ---------- Aufbau ---------- */
+var BG = { 1: "var(--base)", 2: "var(--base)", 3: "var(--base)", 4: "#000", 5: "var(--sky)" };
+tv.style.background = BG[BD];
+cont.innerHTML = [null, board1, board2, board3, board4, board5][BD]();
+var FLS = [].slice.call(document.querySelectorAll("[data-fl]")).map(function (e) { var a = e.getAttribute("data-fl").split(",").map(Number); return { el: e, k: a[0], a: a[1], r: a[2], p: a[3], tf: e.getAttribute("data-tf") || "" }; });
+var PUS = [].slice.call(document.querySelectorAll("[data-pu]")).map(function (e) { return { el: e, i: +e.getAttribute("data-pu"), tf: e.style.transform || "" }; });
+var MQ = document.getElementById("mq"), MU = document.getElementById("mu"), U = 0;
+var STEP = PUS.length ? LOOP / Math.max(PUS.length, 1) : 1, DUR = Math.min(1.3, STEP * 0.95);
+if (PUS.length > 12) { STEP = LOOP / PUS.length; DUR = Math.min(1.0, STEP * 0.95); }
+
+window.renderAt = function (t) {
+  t = ((t % LOOP) + LOOP) % LOOP;
+  var w = 2 * Math.PI * t / LOOP;
+  FLS.forEach(function (f) {
+    var dy = Math.sin(w * f.k + f.p) * f.a, r = Math.sin(w * f.k + f.p + 1.3) * f.r;
+    f.el.style.transform = f.tf + " translateY(" + dy.toFixed(2) + "px) rotate(" + r.toFixed(2) + "deg)";
+  });
+  PUS.forEach(function (p) {
+    var q = ((t - p.i * STEP) % LOOP + LOOP) % LOOP, s = 1;
+    if (q < DUR) s = 1 + 0.07 * Math.sin(Math.PI * q / DUR);
+    p.el.style.transform = p.tf + " scale(" + s.toFixed(4) + ")";
+  });
+  if (MQ) { if (!U) U = MU.getBoundingClientRect().width / (EXP ? 1 : (window.__sc || 1)); MQ.style.transform = "translateX(" + (-U * t / LOOP).toFixed(2) + "px)"; }
+};
+
+/* Skalierung auf Fenster (nur Live) */
+function fit() { if (EXP) return; var s = Math.min(innerWidth / W, innerHeight / H); window.__sc = s; tv.style.transform = "scale(" + s + ")"; tv.style.marginLeft = ((innerWidth - W * s) / 2) + "px"; tv.style.marginTop = ((innerHeight - H * s) / 2) + "px"; U = 0; }
+addEventListener("resize", fit); fit();
+document.fonts.ready.then(function () { U = 0; window.renderAt(Q.get("t") ? +Q.get("t") : 0); window.__ready = true; if (!EXP && !Q.get("t")) { var t0 = performance.now(); (function lp() { window.renderAt(((performance.now() - t0) / 1000) % LOOP); requestAnimationFrame(lp); })(); } });
+</script>
+</body>
+</html>

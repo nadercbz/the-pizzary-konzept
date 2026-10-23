@@ -1,0 +1,47 @@
+{
+ "instagram": "https://www.instagram.com/the_pizzary/",
+ "reels": [
+  {
+   "slug": "usa-beste-pizzen",
+   "titel": "American Style? Nee, Berliner Style.",
+   "video": "assets/reels/usa-beste-pizzen.mp4",
+   "poster": "assets/reels/usa-beste-pizzen.jpg"
+  },
+  {
+   "slug": "opening",
+   "titel": "Neu eröffnet in Berlin",
+   "video": "assets/reels/opening.mp4",
+   "poster": "assets/reels/opening.jpg"
+  },
+  {
+   "slug": "build-your-own",
+   "titel": "Bau sie dir selbst",
+   "video": "assets/reels/build-your-own.mp4",
+   "poster": "assets/reels/build-your-own.jpg"
+  },
+  {
+   "slug": "doenerpizza",
+   "titel": "Die Döner Pizza",
+   "video": "assets/reels/doenerpizza.mp4",
+   "poster": "assets/reels/doenerpizza.jpg"
+  },
+  {
+   "slug": "italienverbot",
+   "titel": "Italien hat hier Pause",
+   "video": "assets/reels/italienverbot.mp4",
+   "poster": "assets/reels/italienverbot.jpg"
+  },
+  {
+   "slug": "pizza-hype",
+   "titel": "Der Pizza Hype",
+   "video": "assets/reels/pizza-hype.mp4",
+   "poster": "assets/reels/pizza-hype.jpg"
+  },
+  {
+   "slug": "team",
+   "titel": "Det Team",
+   "video": "assets/reels/team.mp4",
+   "poster": "assets/reels/team.jpg"
+  }
+ ]
+}

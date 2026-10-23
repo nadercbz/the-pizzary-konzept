@@ -1,0 +1,1 @@
+window.HERO_FRAMES={"ext": "webp", "ende_ab": 177, "d": {"count": 187, "w": 2560, "h": 1440}, "m": {"count": 187, "w": 900, "h": 1250}, "quelle": "hero_v2_4k.mp4"};

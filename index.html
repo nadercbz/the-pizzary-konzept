@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>The Pizzary. Deine Pizza. Deine Regeln.</title>
+<meta name="description" content="The Pizzary, Zimmerstraße, Berlin Mitte. Deine Pizza. Deine Regeln. Bau dir deine Pizza aus Soße, Käse, Toppings und Gewürz, oder nimm eine der 8 Signature Pizzen.">
+<meta property="og:title" content="The Pizzary. Deine Pizza. Deine Regeln.">
+<meta property="og:description" content="Fast. Fresh. Pizza. aus Berlin Mitte. Bau dir deine Pizza oder nimm eine der 8 Signature Pizzen.">
+<meta property="og:image" content="assets/img/hero_ende.webp">
+<meta name="theme-color" content="#6887DD">
+<link rel="icon" type="image/png" href="assets/logo/favicon.png">
+<script>document.documentElement.classList.add("js");</script>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="builder3d.css">
+</head>
+<body class="loading">
+
+<!-- Ladebildschirm: wartet auf die wichtigen Bilder, dann geht der Vorhang auf -->
+<div id="loader" aria-live="polite">
+  <div class="ld-in">
+    <img class="ld-logo" src="assets/logo/logo-weiss.svg" alt="The Pizzary" width="260" height="120">
+    <p class="ld-line hand" id="ldLine">Teig wird geknetet</p>
+    <div class="ld-bar"><i id="ldBar"></i></div>
+    <p class="ld-num loud"><span id="ldNum">0</span>%</p>
+  </div>
+</div>
+
+<header class="bar" id="bar">
+  <a class="bar-logo" href="#hero" aria-label="The Pizzary, nach oben"><img src="assets/logo/logo-weiss.svg" alt="The Pizzary" width="104" height="48"></a>
+  <nav class="bar-nav" aria-label="Seitenmenü">
+    <a href="#bauen">Bau deine</a><a href="#doener">Neu: Döner Pizza</a><a href="#signature">Signature</a><a href="#kiosk">Bestellen</a><a href="#marke">Die Taube</a><a href="#reels">Reels</a><a href="#besuch">Besuch uns</a>
+  </nav>
+  <button class="bar-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="menu"><span>Menü</span></button>
+</header>
+
+<nav class="menu" id="menu" aria-label="Menü" hidden>
+  <a href="#bauen"><b>01</b>Bau deine eigene</a>
+  <a href="#doener"><b>02</b>Neu: Döner Pizza</a>
+  <a href="#signature"><b>03</b>Signature</a>
+  <a href="#kiosk"><b>04</b>So bestellst du</a>
+  <a href="#marke"><b>05</b>Die Taube</a>
+  <a href="#reels"><b>06</b>Unsere Reels</a>
+  <a href="#besuch"><b>07</b>Besuch uns</a>
+</nav>
+
+<div id="smooth-wrapper">
+<div id="smooth-content">
+<main id="top">
+
+<!-- 1 HERO: Pizza Aufbau als Scroll Video (gepinnt, Video wird per Scroll gespult) -->
+<section class="vhero" id="hero">
+  <div class="vh-pin" id="vhPin">
+    <div class="vh-media" id="vhMedia">
+      <img class="vh-img vh-start" id="vhStart" src="assets/img/hero_start.webp" alt="Pizza zerlegt: Teig, Soße, Käse und Toppings schweben übereinander" width="1920" height="1085">
+      <img class="vh-img vh-ende" id="vhEnde" src="assets/img/hero_ende.webp" alt="Fertig gebackene Pizza" width="1920" height="1085">
+      <canvas class="vh-img vh-canvas" id="vhCanvas" aria-hidden="true"></canvas>
+    </div>
+    <div class="vh-copy">
+      <p class="vh-kicker hand">Zimmerstraße, Berlin Mitte</p>
+      <h1 class="vh-h1" aria-label="Deine Pizza. Deine Regeln."><span class="ln"><span>Deine</span></span><span class="ln"><span>Pizza.</span></span></h1>
+    </div>
+    <ol class="vh-steps" aria-hidden="true">
+      <li class="vh-step"><b class="loud">01</b><span>Teig</span></li>
+      <li class="vh-step"><b class="loud">02</b><span>Soße</span></li>
+      <li class="vh-step"><b class="loud">03</b><span>Käse</span></li>
+      <li class="vh-step"><b class="loud">04</b><span>Toppings</span></li>
+      <li class="vh-step"><b class="loud">05</b><span>180 Sekunden</span></li>
+    </ol>
+    <div class="vh-stoerer burst loud" id="vhStoerer" aria-hidden="true"><span>Fast.<br>Fresh.<br>Pizza.</span></div>
+    <div class="vh-end" id="vhEnd">
+      <p class="vh-end-h"><span class="l1">Deine</span><span class="l2">Regeln.</span></p>
+      <a class="btn btn-y vh-btn" href="#bauen">Bau deine eigene</a>
+    </div>
+    <div class="vh-figs fig-clip">
+      <div class="fig vh-top" id="vhTop" data-fig="yuki"><img src="assets/img/voll_yuki.webp" alt="Yuki mit Pizza über dem Kopf" width="1020" height="1600"></div>
+    </div>
+    <p class="scroll-cue hand" id="vhCue">Scroll, und sie baut sich</p>
+    <div class="vh-bar"><i id="vhBar"></i></div>
+  </div>
+</section>
+
+<!-- Bänder -->
+<div class="bands" aria-hidden="true">
+  <div class="band band-a"><div class="mq loud"><span>Fast. Fresh. Pizza. <img class="bh" src="assets/img/kopf_yuki.webp" alt="" width="420" height="420"> Kein Schischi, nur Geschmack <img class="bh" src="assets/img/kopf_malik.webp" alt="" width="420" height="420"> In 180 Sekunden fertig <img class="bh" src="assets/img/kopf_moni.webp" alt="" width="420" height="420"> Fast. Fresh. Pizza. <img class="bh" src="assets/img/kopf_sam.webp" alt="" width="420" height="420"> Kein Schischi, nur Geschmack <img class="bh" src="assets/img/kopf_reni.webp" alt="" width="420" height="420"> In 180 Sekunden fertig <img class="bh" src="assets/img/kopf_guenni.webp" alt="" width="420" height="420"> </span></div></div>
+  <div class="band band-b"><div class="mq loud"><span>Berliner Original <img class="bh" src="assets/img/kopf_yuki.webp" alt="" width="420" height="420"> Deine Regeln <img class="bh" src="assets/img/kopf_malik.webp" alt="" width="420" height="420"> Bau sie dir, wie du sie willst <img class="bh" src="assets/img/kopf_moni.webp" alt="" width="420" height="420"> Berliner Original <img class="bh" src="assets/img/kopf_sam.webp" alt="" width="420" height="420"> Deine Regeln <img class="bh" src="assets/img/kopf_reni.webp" alt="" width="420" height="420"> Bau sie dir, wie du sie willst <img class="bh" src="assets/img/kopf_guenni.webp" alt="" width="420" height="420"> </span></div></div>
+</div>
+
+<!-- 2 STATEMENT mit Wort Reveal -->
+<section class="statement" id="statement">
+  <i class="zig"></i>
+  <p class="hand st-kick">So läuft das bei uns.</p>
+  <h2 class="reveal" id="reveal">Wähle deine Basis. Bau sie dir. 180 Sekunden.</h2>
+  <p class="st-sub">Soße, Käse, Toppings, Gewürz. Du entscheidest an der Theke, wir backen. Keine Pizza sieht aus wie die andere, kein Berliner ist wie der andere.</p>
+  <img class="stempel st-stempel" src="assets/logo/siegel-hell.svg" alt="" width="200" height="200" aria-hidden="true">
+  <div class="fig-clip"><div class="fig sec-fig peek st-fig" data-fig="guenni"><img src="assets/img/fig_guenni.webp" alt="Günni rennt mit Pizza" width="1056" height="1100"></div></div>
+</section>
+
+<!-- 2b BAU DEINE EIGENE: 3D Builder (eigene Dateien builder3d.js und builder3d.css, baut ein zweiter Agent) -->
+<section class="builder" id="bauen"><div id="builder3d"></div></section>
+
+<!-- 2c NEU: DÖNER PIZZA, gepinnt, dreht sich einmal 360 Grad (Bildfolge auf Canvas) -->
+<section class="doener" id="doener">
+  <i class="zig"></i>
+  <div class="dn-pin" id="dnPin">
+    <canvas class="dn-canvas" id="dnCanvas" aria-hidden="true"></canvas>
+    <img class="dn-poster" id="dnPoster" alt="Die neue Döner Pizza" width="1280" height="720">
+    <div class="dn-head">
+      <span class="dn-neu burst loud" aria-hidden="true">Neu</span>
+      <p class="hand">Neu bei uns</p>
+      <h2>Döner<br>Pizza.</h2>
+    </div>
+    <ol class="dn-calls" aria-label="Woraus die Döner Pizza besteht">
+      <li class="dn-c c1"><b class="loud">1</b><span>Knuspriger Teig aus dem Steinofen</span></li>
+      <li class="dn-c c2"><b class="loud">2</b><span>Dönerfleisch und Mozzarella</span></li>
+      <li class="dn-c c3"><b class="loud">3</b><span>Tzatziki</span></li>
+      <li class="dn-c c4"><b class="loud">4</b><span>Eisbergsalat</span></li>
+      <li class="dn-c c5"><b class="loud">5</b><span>Kirschtomaten</span></li>
+      <li class="dn-c c6"><b class="loud">6</b><span>Rote Zwiebeln</span></li>
+    </ol>
+    <div class="fig dn-must" data-fig="mustafa"><img src="assets/img/fig_mustafa.webp" alt="Mustafa" width="482" height="600"></div>
+    <div class="dn-bar"><i id="dnBar"></i></div>
+  </div>
+</section>
+
+<!-- 3 SIGNATURE: horizontal -->
+<section class="sig" id="signature">
+  <div class="sig-pin" id="sigPin">
+    <div class="sig-head">
+      <h2>Acht Charaktere.<br>Acht Pizzen.</h2>
+      <p class="hand">Scroll weiter, die Köpfe drehen sich.</p>
+      <p class="sig-count loud"><b id="sigNow">01</b> / 08</p>
+    </div>
+    <div class="sig-track" id="sigTrack">
+      <article class="sc" style="--bg:#F5F5AF" data-bg="#F5F5AF">
+        <i class="sc-panel"></i>
+        <span class="sc-badge loud" aria-hidden="true">L</span><span class="sc-tag loud">vegan</span>
+        <img class="sc-pizza" src="assets/img/pizza_lennart.webp" alt="Pizza Lennart" width="800" height="800">
+        <div class="sc-bottom"><div><span class="sc-num loud">01</span><h3>Lennart</h3><p>Veganer Reibeschmelz, Babyspinat, rote Zwiebeln, Kirschtomaten, Mais</p></div><p class="sc-price loud">13,90 €</p></div>
+      </article>
+      <article class="sc" style="--bg:#DE7DCE" data-bg="#DE7DCE">
+        <i class="sc-panel"></i>
+        <img class="sc-head" src="assets/img/kopf_yuki.webp" alt="Figur Yuki" width="420" height="500"><span class="sc-tag loud">scharf</span>
+        <img class="sc-pizza" src="assets/img/pizza_yuki.webp" alt="Pizza Yuki" width="800" height="800">
+        <div class="sc-bottom"><div><span class="sc-num loud">02</span><h3>Yuki</h3><p>BBQ Soße, Mozzarella, gegrilltes Hähnchen, rote Zwiebeln, Jalapeños</p></div><p class="sc-price loud">13,90 €</p></div>
+      </article>
+      <article class="sc" style="--bg:#AFCDAF" data-bg="#AFCDAF">
+        <i class="sc-panel"></i>
+        <img class="sc-head" src="assets/img/kopf_malik.webp" alt="Figur Malik" width="420" height="500">
+        <img class="sc-pizza" src="assets/img/pizza_malik.webp" alt="Pizza Malik" width="800" height="800">
+        <div class="sc-bottom"><div><span class="sc-num loud">03</span><h3>Malik</h3><p>Mozzarella, Salami, Speck, rote Zwiebeln, Champignons</p></div><p class="sc-price loud">14,90 €</p></div>
+      </article>
+      <article class="sc" style="--bg:#7D82D9" data-bg="#7D82D9">
+        <i class="sc-panel"></i>
+        <img class="sc-head" src="assets/img/kopf_guenni.webp" alt="Figur Günni" width="420" height="500">
+        <img class="sc-pizza" src="assets/img/pizza_guenni.webp" alt="Pizza Günni" width="800" height="800">
+        <div class="sc-bottom"><div><span class="sc-num loud">04</span><h3>Günni</h3><p>Mozzarella, Salami, Champignons, Hinterschinken, rote Paprika, Mais</p></div><p class="sc-price loud">14,90 €</p></div>
+      </article>
+      <article class="sc" style="--bg:#F5F5AF" data-bg="#F5F5AF">
+        <i class="sc-panel"></i>
+        <img class="sc-head" src="assets/img/kopf_moni.webp" alt="Figur Moni" width="420" height="500"><span class="sc-tag loud">käsig</span>
+        <img class="sc-pizza" src="assets/img/pizza_moni.webp" alt="Pizza Moni" width="800" height="800">
+        <div class="sc-bottom"><div><span class="sc-num loud">05</span><h3>Moni</h3><p>Mozzarella, Ricotta, Fetakäse, Parmesan, Olivenöl</p></div><p class="sc-price loud">14,90 €</p></div>
+      </article>
+      <article class="sc" style="--bg:#DE7DCE" data-bg="#DE7DCE">
+        <i class="sc-panel"></i>
+        <img class="sc-head" src="assets/img/kopf_sam.webp" alt="Figur Sam" width="420" height="500">
+        <img class="sc-pizza" src="assets/img/pizza_sam.webp" alt="Pizza Sam" width="800" height="800">
+        <div class="sc-bottom"><div><span class="sc-num loud">06</span><h3>Sam</h3><p>Mozzarella, Fetakäse, Sucuk, weiße Zwiebeln, Peperoni, Knoblauchöl</p></div><p class="sc-price loud">15,90 €</p></div>
+      </article>
+      <article class="sc" style="--bg:#AFCDAF" data-bg="#AFCDAF">
+        <i class="sc-panel"></i>
+        <img class="sc-head" src="assets/img/kopf_reni.webp" alt="Figur Renate" width="420" height="500">
+        <img class="sc-pizza" src="assets/img/pizza_renate.webp" alt="Pizza Renate" width="800" height="800">
+        <div class="sc-bottom"><div><span class="sc-num loud">07</span><h3>Renate</h3><p>Mozzarella, Thunfisch, weiße Zwiebeln</p></div><p class="sc-price loud">15,90 €</p></div>
+      </article>
+      <article class="sc" style="--bg:#7D82D9" data-bg="#7D82D9">
+        <i class="sc-panel"></i>
+        <span class="sc-badge loud" aria-hidden="true">S</span><span class="sc-tag loud">beliebt</span>
+        <img class="sc-pizza" src="assets/img/pizza_steve.webp" alt="Pizza Steve" width="800" height="800">
+        <div class="sc-bottom"><div><span class="sc-num loud">08</span><h3>Steve</h3><p>Knoblauch Pesto, Mozzarella, Salami, Peperoni-Salami, Schinken, Mais, rote Zwiebeln</p></div><p class="sc-price loud">15,90 €</p></div>
+      </article>
+      <article class="sc sc-end"><div class="sc-end-in"><p class="loud">Und jetzt du.</p><p>Baukasten ab 10,90 €. 1, 3, 5 oder 7 Toppings.</p><a class="btn" href="#bauen">Bau deine eigene</a></div></article>
+    </div>
+    <div class="sig-bar"><i id="sigBar"></i></div>
+    <p class="sig-note">Preise und Hinweise wie auf der Speisekarte Okt 2026. Allergene auf Nachfrage.</p>
+  </div>
+</section>
+
+<!-- 4b KIOSK TEASER -->
+<section class="kiosk" id="kiosk">
+  <i class="zig"></i>
+  <div class="kiosk-in">
+    <div class="kiosk-copy">
+      <p class="hand">So bestellst du bei uns</p>
+      <h2>Tippen. Bauen. Fertig.</h2>
+      <p>Stufe wählen, dann Soße, Käse, Toppings und Gewürz. Am Bestell Terminal tippst du dir deine Pizza zusammen, Allergene siehst du direkt dabei. Lieber persönlich? Sag es einfach an der Theke.</p>
+      <a class="btn btn-y" href="#bauen">Erst mal hier ausprobieren</a>
+    </div>
+    <div class="fig-clip kiosk-clip"><div class="fig sec-fig peek ki-fig" data-fig="sam" data-flip="1" data-mobile="0"><img src="assets/img/fig_sam.webp" alt="Sam zeigt aufs Terminal" width="696" height="1100"></div></div>
+    <div class="kiosk-phones">
+      <img class="kp kp-1" src="assets/img/kiosk_1.webp" alt="Bestell Terminal: Startbildschirm" width="394" height="700" data-speed="1.06">
+      <img class="kp kp-2" src="assets/img/kiosk_2.webp" alt="Bestell Terminal: Toppings wählen" width="394" height="700" data-speed="0.94">
+      <img class="kp kp-3" src="assets/img/kiosk_3.webp" alt="Bestell Terminal: deine Bestellnummer" width="394" height="700" data-speed="1.1">
+    </div>
+  </div>
+</section>
+
+<!-- 5 MARKE UND TAUBE -->
+<section class="marke" id="marke">
+  <i class="zig"></i>
+  <div class="marke-in">
+    <div class="m-voll m-yuki fig" data-speed="0.9" data-fig="yuki"><img src="assets/img/voll_yuki.webp" alt="Illustration Yuki mit Pizza" width="1020" height="1600"></div>
+    <div class="m-voll m-mm fig" data-speed="1.08" data-fig="mm"><img src="assets/img/voll_malik_moni.webp" alt="Illustration Malik und Moni mit Pizzen" width="1434" height="1600"></div>
+    <div class="marke-mid">
+      <p class="hand">Berliner Original</p>
+      <h2>Die Taube bleibt.<br>Italien nicht.</h2>
+      <img class="m-taube" src="assets/img/taube.webp" alt="Taube mit BERLIN und The Pizzary" width="380" height="418" data-speed="0.95">
+      <p class="m-text">Sie ist überall in Berlin, nicht totzukriegen und gehört zum Stadtbild. Die Taube ist das Spirit Animal der Marke und bricht bewusst mit dem Italien Klischee.</p>
+      <p class="m-manifest hand">Keine Pizza sieht aus wie die andere, kein Berliner ist wie der andere.</p>
+    </div>
+  </div>
+  <div class="heads" aria-hidden="true"><div class="heads-track">
+    <img src="assets/img/kopf_yuki.webp" alt="" width="420" height="508"><img src="assets/img/kopf_malik.webp" alt="" width="420" height="500"><img src="assets/img/kopf_moni.webp" alt="" width="420" height="500"><img src="assets/img/kopf_sam.webp" alt="" width="420" height="500"><img src="assets/img/kopf_reni.webp" alt="" width="420" height="500"><img src="assets/img/kopf_guenni.webp" alt="" width="420" height="500">
+    <img src="assets/img/kopf_yuki.webp" alt="" width="420" height="508"><img src="assets/img/kopf_malik.webp" alt="" width="420" height="500"><img src="assets/img/kopf_moni.webp" alt="" width="420" height="500"><img src="assets/img/kopf_sam.webp" alt="" width="420" height="500"><img src="assets/img/kopf_reni.webp" alt="" width="420" height="500"><img src="assets/img/kopf_guenni.webp" alt="" width="420" height="500">
+  </div></div>
+</section>
+
+<!-- 5b REELS: Auf Insta gefeiert -->
+<section class="reels" id="reels">
+  <i class="zig"></i>
+  <div class="rl-head">
+    <p class="hand">Auf Insta gefeiert</p>
+    <h2>Unsere Reels.</h2>
+    <p>Wisch durch. Antippen schaltet den Ton an.</p>
+  </div>
+  <div class="rl-track" id="rlTrack">
+    <figure class="rl" style="--r:-3deg">
+      <div class="rl-phone"><video muted playsinline loop preload="none" poster="assets/reels/usa-beste-pizzen.jpg" data-src="assets/reels/usa-beste-pizzen.mp4" aria-label="Reel: American Style? Nee, Berliner Style."></video>
+        <button class="rl-ton" type="button" aria-label="Ton an"><span>Ton an</span></button></div>
+      <figcaption class="hand">American Style? Nee, Berliner Style.</figcaption>
+    </figure>
+    <figure class="rl" style="--r:2deg">
+      <div class="rl-phone"><video muted playsinline loop preload="none" poster="assets/reels/opening.jpg" data-src="assets/reels/opening.mp4" aria-label="Reel: Neu eröffnet in Berlin"></video>
+        <button class="rl-ton" type="button" aria-label="Ton an"><span>Ton an</span></button></div>
+      <figcaption class="hand">Neu eröffnet in Berlin</figcaption>
+    </figure>
+    <figure class="rl" style="--r:-1.5deg">
+      <div class="rl-phone"><video muted playsinline loop preload="none" poster="assets/reels/build-your-own.jpg" data-src="assets/reels/build-your-own.mp4" aria-label="Reel: Bau sie dir selbst"></video>
+        <button class="rl-ton" type="button" aria-label="Ton an"><span>Ton an</span></button></div>
+      <figcaption class="hand">Bau sie dir selbst</figcaption>
+    </figure>
+    <figure class="rl" style="--r:3deg">
+      <div class="rl-phone"><video muted playsinline loop preload="none" poster="assets/reels/doenerpizza.jpg" data-src="assets/reels/doenerpizza.mp4" aria-label="Reel: Die Döner Pizza"></video>
+        <button class="rl-ton" type="button" aria-label="Ton an"><span>Ton an</span></button></div>
+      <figcaption class="hand">Die Döner Pizza</figcaption>
+    </figure>
+    <figure class="rl" style="--r:-2.5deg">
+      <div class="rl-phone"><video muted playsinline loop preload="none" poster="assets/reels/italienverbot.jpg" data-src="assets/reels/italienverbot.mp4" aria-label="Reel: Italien hat hier Pause"></video>
+        <button class="rl-ton" type="button" aria-label="Ton an"><span>Ton an</span></button></div>
+      <figcaption class="hand">Italien hat hier Pause</figcaption>
+    </figure>
+    <figure class="rl" style="--r:1.5deg">
+      <div class="rl-phone"><video muted playsinline loop preload="none" poster="assets/reels/pizza-hype.jpg" data-src="assets/reels/pizza-hype.mp4" aria-label="Reel: Der Pizza Hype"></video>
+        <button class="rl-ton" type="button" aria-label="Ton an"><span>Ton an</span></button></div>
+      <figcaption class="hand">Der Pizza Hype</figcaption>
+    </figure>
+    <figure class="rl" style="--r:-2deg">
+      <div class="rl-phone"><video muted playsinline loop preload="none" poster="assets/reels/team.jpg" data-src="assets/reels/team.mp4" aria-label="Reel: Det Team"></video>
+        <button class="rl-ton" type="button" aria-label="Ton an"><span>Ton an</span></button></div>
+      <figcaption class="hand">Det Team</figcaption>
+    </figure>
+
+  </div>
+  <div class="fig-clip"><div class="fig sec-fig rl-fig" data-fig="reni" data-mobile="0"><img src="assets/img/fig_reni.webp" alt="Reni mit Pizzastücken" width="642" height="1100"></div></div>
+  <p class="rl-cta"><a class="btn btn-y" href="https://www.instagram.com/the_pizzary/" target="_blank" rel="noopener">Folg uns auf Instagram @the_pizzary</a></p>
+</section>
+
+<!-- 6 BESUCH UNS: Gäste Footer -->
+<footer class="besuch" id="besuch">
+  <i class="zig"></i>
+  <div class="bs-in">
+    <div class="bs-brand">
+      <img class="bs-logo" src="assets/logo/logo-weiss.svg" alt="The Pizzary" width="240" height="110">
+      <p class="bs-claim loud">Deine Pizza.<br>Deine Regeln.</p>
+    </div>
+    <div class="bs-col">
+      <h2>Komm vorbei.</h2>
+      <p class="bs-adr">Zimmerstraße<br>Berlin Mitte</p>
+      <p class="bs-hint hand">Nähe Checkpoint Charlie</p>
+    </div>
+    <div class="bs-col">
+      <h3>Folg uns</h3>
+      <p><a class="bs-insta" href="https://www.instagram.com/the_pizzary/" target="_blank" rel="noopener">@the_pizzary</a></p>
+      <h3>Lieber liefern lassen?</h3>
+      <p>Du findest uns bei Wolt, Uber Eats und Lieferando.</p>
+    </div>
+  </div>
+  <img class="stempel bs-stempel" src="assets/logo/siegel-hell.svg" alt="" width="200" height="200" aria-hidden="true">
+  <div class="fig-clip walk-clip" aria-hidden="false">
+    <div class="fig walker walker-1" data-fig="taube"><img src="assets/img/fig_taube.webp" alt="Die Taube spaziert" width="615" height="700"></div>
+  </div>
+  <div class="bs-fine">
+    <!-- Impressum und Datenschutz fehlen noch: vor dem echten Start durch die Seiten des Betreibers ersetzen (Pflicht) -->
+    <p class="bs-legal"><a href="#">Impressum</a><a href="#">Datenschutz</a></p>
+    <p>Preise laut Speisekarte, Stand Oktober 2026. Allergene und Zusatzstoffe auf Nachfrage.</p>
+    <p>Bildmaterial im Kopfbereich: KI Visualisierung.</p>
+    <p>© 2026 The Pizzary</p>
+  </div>
+</footer>
+
+</main>
+</div>
+</div>
+
+<script src="assets/sprites/manifest.js"></script>
+<script src="assets/hero_frames/frames.js"></script>
+<script src="assets/doener_frames/frames.js"></script>
+<script>window.BAU={"sosse":[{"id":"tomatensauce","name":"Tomatensoße","col":"#c8321e"},{"id":"tomatensauce-scharf","name":"Scharfe Tomatensoße","col":"#a51d14"},{"id":"bechamel","name":"Béchamel","col":"#efe5cc"},{"id":"pesto","name":"Pesto","col":"#5c8a2a"},{"id":"bbq","name":"BBQ Soße","col":"#5b2313"},{"id":"hollandaise","name":"Hollandaise (vegan)","col":"#f0c94e"},{"id":"joghurtsauce","name":"Joghurtsoße","col":"#f2efe4"},{"id":"ranch","name":"Ranch","col":"#ebe3cf"},{"id":"balsamico","name":"Balsamico","col":"#3a1d18"},{"id":"olivenoel","name":"Olivenöl","col":"#c7b03a"},{"id":"knoblauchoel","name":"Knoblauchöl","col":"#dcc47c"}],"kaese":[{"id":"mozzarella","name":"Mozzarella","img":null,"n":0,"layer":true},{"id":"mozzarella-perlen","name":"Mozzarella Perlen","img":"mozzarella-perlen","n":6,"layer":false},{"id":"parmesan","name":"Parmesan","img":"parmesan","n":6,"layer":false},{"id":"gorgonzola","name":"Gorgonzola","img":"gorgonzola","n":6,"layer":false},{"id":"feta","name":"Feta","img":"feta","n":6,"layer":false},{"id":"ziegenkaese","name":"Ziegenkäse","img":"ziegenkaese","n":6,"layer":false},{"id":"ricotta","name":"Ricotta","img":"ricotta","n":6,"layer":false},{"id":"veganer-kaese","name":"Veganer Käse","img":"veganer-kaese","n":6,"layer":false}],"top":[{"id":"salami","name":"Salami","cat":"Fleisch","img":"salami","n":6},{"id":"pepperoni","name":"Pepperoni","cat":"Fleisch","img":"pepperoni","n":6},{"id":"schinken","name":"Schinken","cat":"Fleisch","img":"schinken","n":5},{"id":"bacon","name":"Bacon","cat":"Fleisch","img":"bacon","n":6},{"id":"hackfleisch","name":"Hackfleisch","cat":"Fleisch","img":"hackfleisch","n":8},{"id":"haehnchen","name":"Hähnchen","cat":"Fleisch","img":"haehnchen","n":6},{"id":"sucuk","name":"Sucuk","cat":"Fleisch","img":"sucuk","n":6},{"id":"thunfisch","name":"Thunfisch","cat":"Fleisch","img":"thunfisch","n":6},{"id":"veganes-hack","name":"Veganes Hack","cat":"Vegan","img":"veganes-hack","n":8},{"id":"veganer-schinken","name":"Veganer Schinken","cat":"Vegan","img":"veganer-schinken","n":6},{"id":"vegane-salami","name":"Vegane Salami","cat":"Vegan","img":"vegane-salami","n":6},{"id":"champignons","name":"Champignons","cat":"Gemüse","img":"champignons","n":6},{"id":"rote-zwiebeln","name":"Rote Zwiebeln","cat":"Gemüse","img":"zwiebel-rot","n":7},{"id":"weisse-zwiebeln","name":"Weiße Zwiebeln","cat":"Gemüse","img":"zwiebel-weiss","n":6},{"id":"kirschtomaten","name":"Kirschtomaten","cat":"Gemüse","img":"kirschtomaten","n":6},{"id":"paprika-rot","name":"Paprika rot","cat":"Gemüse","img":"paprika-rot","n":8},{"id":"paprika-gelb","name":"Paprika gelb","cat":"Gemüse","img":"paprika-gelb","n":6},{"id":"paprika-gruen","name":"Paprika grün","cat":"Gemüse","img":"paprika-gruen","n":6},{"id":"oliven-schwarz","name":"Oliven schwarz","cat":"Gemüse","img":"oliven-schwarz","n":8},{"id":"oliven-gruen","name":"Oliven grün","cat":"Gemüse","img":"oliven-gruen","n":8},{"id":"artischocken","name":"Artischocken","cat":"Gemüse","img":"artischocken","n":6},{"id":"spinat","name":"Spinat","cat":"Gemüse","img":"spinat","n":6},{"id":"rucola","name":"Rucola","cat":"Gemüse","img":"rucola","n":3},{"id":"brokkoli","name":"Brokkoli","cat":"Gemüse","img":"brokkoli","n":6},{"id":"zucchini","name":"Zucchini","cat":"Gemüse","img":"zucchini","n":6},{"id":"mais","name":"Mais","cat":"Gemüse","img":"mais","n":18},{"id":"knoblauch","name":"Knoblauch","cat":"Gemüse","img":"knoblauch","n":8},{"id":"ananas","name":"Ananas","cat":"Obst","img":"ananas","n":6},{"id":"jalapenos","name":"Jalapeños","cat":"Scharf","img":"jalapenos","n":8},{"id":"chili-gruen","name":"Chili grün","cat":"Scharf","img":"chili-gruen","n":8},{"id":"chili-rot","name":"Chili rot","cat":"Scharf","img":"chili-rot","n":8},{"id":"peperoni-eingelegt","name":"Peperoni (eingelegt, grün)","cat":"Scharf","img":"peperoni-eingelegt","n":5}],"gew":[{"id":"oregano","name":"Oregano","col":"#4f6b2a"},{"id":"chilipulver","name":"Chilipulver","col":"#b8321c"},{"id":"meersalz","name":"Meersalz","col":"#ffffff"}],"preise":[[1,10.9],[3,12.9],[5,14.9],[7,16.9]]};</script>
+<script src="assets/vendor/gsap.min.js"></script>
+<script src="assets/vendor/ScrollTrigger.min.js"></script>
+<script src="assets/vendor/ScrollSmoother.min.js"></script>
+<script src="app.js"></script>
+<script src="builder3d.js" defer></script>
+</body>
+</html>
